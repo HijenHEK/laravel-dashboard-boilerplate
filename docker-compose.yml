@@ -1,0 +1,62 @@
+version: "3.7"
+services:
+    dash-api:
+        build:
+            args:
+                user: ${SERVER_USER:-foulen}
+                uid: ${SERVER_USER_UID:-1000}
+            context: ./
+            dockerfile: Dockerfile
+        image: dash
+        container_name: dash-api
+        restart: unless-stopped
+        working_dir: /var/www/
+        command: bash -c " composer install && php artisan migrate && php artisan optimize && php-fpm"
+        depends_on:
+            - dash-db
+        volumes:
+            - ./:/var/www
+        networks:
+            - dash-api
+            - dash-web
+
+    dash-db:
+        image: mysql:8.0
+        container_name: dash-db
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE-database}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD-password}
+            MYSQL_PASSWORD: ${DB_PASSWORD-password}
+            MYSQL_USER: ${DB_USERNAME-foulen}
+        ports:
+            - ${FORWARD_DB_PORT-33066}:3306
+        networks:
+            - dash-api
+
+    dash-web:
+        image: nginx:alpine
+        container_name: dash-web
+        restart: unless-stopped
+        depends_on:
+            - dash-api
+        ports:
+            - ${APP_PORT-8000}:80
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx:/etc/nginx/conf.d/
+        networks:
+            - dash-web
+    dash-mail:
+        image: mailhog/mailhog
+        container_name: dash-mail
+        ports:
+            - ${MAIL_PORT-8003}:1025
+            - ${MAILHOG_PORT-8100}:8025
+        networks:
+            - dash-api
+networks:
+    dash-api:
+        driver: bridge
+    dash-web:
+        driver: bridge
