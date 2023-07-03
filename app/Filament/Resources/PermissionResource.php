@@ -27,6 +27,7 @@ class PermissionResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
+                    ->unique()
                     ->columnSpan([
                         'lg' => 'full',
                     ]),
