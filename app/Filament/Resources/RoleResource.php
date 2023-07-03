@@ -29,7 +29,7 @@ class RoleResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->unique()
+                    ->unique(ignoreRecord: true)
                     ->columnSpan([
                         'lg' => 'full',
                     ]),
