@@ -23,6 +23,7 @@ class PermissionsRelationManager extends RelationManager
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255)
+                    ->unique(ignoreRecord: true)
                     ->columnSpan([
                         'lg' => 'full',
                     ]),
