@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Database\Eloquent\Model;
 
 class UserPolicy
 {
@@ -12,7 +13,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin', 'admin']);
+        return $user->hasAnyRole(['super-admin', 'admin']) || $user->hasAnyPermission(['read user']);
     }
 
     /**
@@ -20,7 +21,7 @@ class UserPolicy
      */
     public function view(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin', 'admin']);
+        return $user->hasAnyRole(['super-admin', 'admin']) || $user->hasAnyPermission(['read user']);
     }
 
     /**
@@ -28,22 +29,28 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin', 'admin']);
+        return $user->hasAnyRole(['super-admin', 'admin']) || $user->hasAnyPermission(['create user']);
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user): bool
+    public function update(User $user, Model $model): bool
     {
-        return $user->hasAnyRole(['super-admin']);
+        if($model->hasAnyRole(['super-admin']) && !$user->hasPermissionTo('update admin')) {
+            return false;
+        }
+        return $user->hasAnyRole(['super-admin']) || $user->hasAnyPermission(['update user']);
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user): bool
+    public function delete(User $user, Model $model): bool
     {
-        return $user->hasAnyRole(['super-admin']);
+        if($model->hasAnyRole(['super-admin'])){
+            return false;
+        }
+        return $user->hasAnyRole(['super-admin']) || $user->hasAnyPermission(['delete user']);
     }
 }

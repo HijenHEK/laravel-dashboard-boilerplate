@@ -13,7 +13,7 @@ class RolePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin', 'admin']);
+        return $user->hasAnyRole(['super-admin', 'admin']) || $user->hasAnyPermission(['read role']);
     }
 
     /**
@@ -21,7 +21,7 @@ class RolePolicy
      */
     public function view(User $user, Role $role): bool
     {
-        return $user->hasAnyRole(['super-admin', 'admin']);
+        return $user->hasAnyRole(['super-admin', 'admin']) || $user->hasAnyPermission(['read role']);
     }
 
     /**
@@ -29,7 +29,7 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin', 'admin']);
+        return $user->hasAnyRole(['super-admin', 'admin']) || $user->hasAnyPermission(['create role']);
     }
 
     /**
@@ -37,7 +37,7 @@ class RolePolicy
      */
     public function update(User $user, Role $role): bool
     {
-        return $user->hasAnyRole(['super-admin']);
+        return $user->hasAnyRole(['super-admin']) || $user->hasAnyPermission(['update role']);
     }
 
     /**
@@ -45,6 +45,6 @@ class RolePolicy
      */
     public function delete(User $user, Role $role): bool
     {
-        return $user->hasAnyRole(['super-admin']);
+        return $user->hasAnyRole(['super-admin']) || $user->hasAnyPermission(['delete role']);
     }
 }
