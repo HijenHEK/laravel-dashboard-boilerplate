@@ -32,9 +32,14 @@ class UserResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('roles')
-                    ->relationship('roles', 'name')
+                    ->relationship('roles', 'name',
+                        fn (Builder $query) =>
+                            auth()->user()?->hasAnyRole(['super-admin']) ?
+                            $query : $query->where('name' , '!=', 'super-admin')
+                        )
                     ->preload()
                     ->multiple()
+                    ->maxItems(1)
                     ->helperText('select only one'),
                 Forms\Components\TextInput::make('email')
                     ->email()
