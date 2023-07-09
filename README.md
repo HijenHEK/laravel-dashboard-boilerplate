@@ -6,4 +6,4 @@
 - [x] users management
 - [x] authorization by roles & policies
 - [ ] authorization by permissions
-- [ ] add fron office authentication
+- [ ] add front office authentication
